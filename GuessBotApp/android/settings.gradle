@@ -1,0 +1,3 @@
+rootProject.name = 'GuessBotApp'
+
+include ':app'

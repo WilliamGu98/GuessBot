@@ -1,18 +1,20 @@
 import React from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import firebase from 'react-native-firebase'
+import { View, Text, ActivityIndicator, StyleSheet, Button } from "react-native";
 
 export default class Loading extends React.Component {
   componentDidMount() {
-     firebase.auth().onAuthStateChanged(user => { //Checks if user is signed in
-       this.props.navigation.navigate(user ? 'Main' : 'Login')
-     })
+     //TODO: logic for finding match
    }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text>Loading</Text>
+        <Text>Looking for match</Text>
         <ActivityIndicator size="large"/>
+        <Button
+          title="Cancel"
+          onPress={() => this.props.navigation.navigate("Main")}
+        />
       </View>
     );
   }

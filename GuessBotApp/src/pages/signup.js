@@ -3,16 +3,17 @@ import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 import firebase from "react-native-firebase";
 
 export default class SignUp extends React.Component {
-  state = { email: "", password: "", errorMessage: null };
+  state = { email: "", password: "", username: "", errorMessage: null };
 
   handleSignUp = () => {
-    const { email, password } = this.state;
-    if (email == "" || password == "") {
-      this.setState({ errorMessage: "Both fields must be entered" });
+    const { email, password, username } = this.state;
+    if (email == "" || password == "" || username == "") {
+      this.setState({ errorMessage: "All fields must be entered" });
     } else {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
+        .then(userdata => firebase.firestore().collection('users').add({username: username, id: userdata.user.uid}))
         .then(user => this.props.navigation.navigate("Main"))
         .catch(error => this.setState({ errorMessage: error.message }));
     }
@@ -39,6 +40,13 @@ export default class SignUp extends React.Component {
           style={styles.textInput}
           onChangeText={password => this.setState({ password })}
           value={this.state.password}
+        />
+        <TextInput
+          placeholder="Username"
+          autoCapitalize="none"
+          style={styles.textInput}
+          onChangeText={username => this.setState({ username })}
+          value={this.state.username}
         />
         <Button title="Sign Up" onPress={this.handleSignUp} />
         <Button

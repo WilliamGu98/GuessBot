@@ -8,6 +8,7 @@ import SignUp from "./pages/signup";
 import Login from "./pages/login";
 import Main from "./pages/main";
 import LookingForMatch from "./pages/lookingForMatch";
+import EditProfile from "./pages/editprofile";
 
 // create our app's navigation stack
 export default createAppContainer(
@@ -17,7 +18,8 @@ export default createAppContainer(
       SignUp,
       Login,
       Main,
-      LookingForMatch
+      LookingForMatch,
+      EditProfile
     },
     {
       initialRouteName: "Loading"

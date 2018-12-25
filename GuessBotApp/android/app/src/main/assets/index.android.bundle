@@ -1371,7 +1371,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
   _reactNative.AppRegistry.registerComponent(_app.name, function () {
     return _App.default;
   });
-},0,[1,2,387,622],"index.js");
+},0,[1,2,387,623],"index.js");
 __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -80983,18 +80983,21 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
 
   var _lookingForMatch = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[8], "./pages/lookingForMatch"));
 
+  var _editprofile = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[9], "./pages/editprofile"));
+
   var _default = (0, _reactNavigation.createAppContainer)((0, _reactNavigation.createSwitchNavigator)({
     Loading: _loading.default,
     SignUp: _signup.default,
     Login: _login.default,
     Main: _main.default,
-    LookingForMatch: _lookingForMatch.default
+    LookingForMatch: _lookingForMatch.default,
+    EditProfile: _editprofile.default
   }, {
     initialRouteName: "Loading"
   }));
 
   exports.default = _default;
-},387,[1,46,2,388,514,618,619,620,621],"src\\App.js");
+},387,[1,46,2,388,514,618,619,620,621,622],"src\\App.js");
 __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   module.exports = {
     get createAppContainer() {
@@ -110081,6 +110084,10 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           _this.setState({
             errorMessage: "All fields must be entered"
           });
+        } else if (username.length < 4) {
+          _this.setState({
+            errorMessage: "Username must be at least 4 characters"
+          });
         } else {
           _reactNativeFirebase.default.auth().createUserWithEmailAndPassword(email, password).then(function (userdata) {
             return _reactNativeFirebase.default.firestore().collection("users").add({
@@ -110110,12 +110117,12 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           style: styles.container,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 29
+            lineNumber: 33
           }
         }, _react.default.createElement(_reactNative.Text, {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 30
+            lineNumber: 34
           }
         }, "Sign Up"), this.state.errorMessage && _react.default.createElement(_reactNative.Text, {
           style: {
@@ -110123,7 +110130,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 32
+            lineNumber: 36
           }
         }, this.state.errorMessage), _react.default.createElement(_reactNative.TextInput, {
           placeholder: "Email",
@@ -110137,7 +110144,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           value: this.state.email,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 34
+            lineNumber: 38
           }
         }), _react.default.createElement(_reactNative.TextInput, {
           secureTextEntry: true,
@@ -110152,7 +110159,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           value: this.state.password,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 41
+            lineNumber: 45
           }
         }), _react.default.createElement(_reactNative.TextInput, {
           placeholder: "Username",
@@ -110166,14 +110173,14 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           value: this.state.username,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 49
+            lineNumber: 53
           }
         }), _react.default.createElement(_reactNative.Button, {
           title: "Sign Up",
           onPress: this.handleSignUp,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 56
+            lineNumber: 60
           }
         }), _react.default.createElement(_reactNative.Button, {
           title: "Already have an account? Login",
@@ -110182,7 +110189,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 57
+            lineNumber: 61
           }
         }));
       }
@@ -110411,8 +110418,8 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
 
       _this = (0, _possibleConstructorReturn2.default)(this, (_getPrototypeOf2 = (0, _getPrototypeOf3.default)(Main)).call.apply(_getPrototypeOf2, [this].concat(args)));
       _this.state = {
-        currentEmail: null,
-        username: null
+        email: _this.props.navigation.getParam("email", null),
+        username: _this.props.navigation.getParam("username", null)
       };
 
       _this.handleLogout = function () {
@@ -110442,11 +110449,11 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
           });
 
           _this2.setState({
-            currentEmail: email,
+            email: email,
             username: matches[0]
           });
         }).catch(function (error) {
-          console.log("ERRRRROR:" + error);
+          console.log("Error:" + error);
         });
       }
     }, {
@@ -110455,43 +110462,58 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
         var _this3 = this;
 
         var _this$state = this.state,
-            currentEmail = _this$state.currentEmail,
+            email = _this$state.email,
             username = _this$state.username;
 
-        if (currentEmail === null) {
+        if (email === null) {
           return null;
         } else {
           return _react.default.createElement(_reactNative.View, {
             style: styles.container,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 45
+              lineNumber: 50
             }
           }, _react.default.createElement(_reactNative.Text, {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 46
+              lineNumber: 51
             }
-          }, "Hi ", currentEmail, "!"), _react.default.createElement(_reactNative.Text, {
+          }, "Hi ", email, "!"), _react.default.createElement(_reactNative.Text, {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 47
+              lineNumber: 52
             }
           }, "Your username is ", username), _react.default.createElement(_reactNative.Button, {
             title: "Find match",
             onPress: function onPress() {
-              return _this3.props.navigation.navigate("LookingForMatch");
+              return _this3.props.navigation.navigate("LookingForMatch", {
+                username: username,
+                email: email
+              });
             },
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 48
+              lineNumber: 53
+            }
+          }), _react.default.createElement(_reactNative.Button, {
+            title: "Edit Profile",
+            onPress: function onPress() {
+              return _this3.props.navigation.navigate("EditProfile", {
+                username: username,
+                email: email
+              });
+            },
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 62
             }
           }), _react.default.createElement(_reactNative.Button, {
             title: "Logout",
             onPress: this.handleLogout,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 52
+              lineNumber: 71
             }
           }));
         }
@@ -110507,13 +110529,6 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
       flex: 1,
       justifyContent: "center",
       alignItems: "center"
-    },
-    textInput: {
-      height: 40,
-      width: "90%",
-      borderColor: "gray",
-      borderWidth: 1,
-      marginTop: 8
     }
   });
 },620,[1,19,20,27,30,33,46,2,515],"src\\pages\\main.js");
@@ -110531,7 +110546,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
 
   var _possibleConstructorReturn2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[3], "@babel/runtime/helpers/possibleConstructorReturn"));
 
-  var _getPrototypeOf2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[4], "@babel/runtime/helpers/getPrototypeOf"));
+  var _getPrototypeOf3 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[4], "@babel/runtime/helpers/getPrototypeOf"));
 
   var _inherits2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[5], "@babel/runtime/helpers/inherits"));
 
@@ -110545,8 +110560,23 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
     (0, _inherits2.default)(Loading, _React$Component);
 
     function Loading() {
+      var _getPrototypeOf2;
+
+      var _this;
+
       (0, _classCallCheck2.default)(this, Loading);
-      return (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(Loading).apply(this, arguments));
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = (0, _possibleConstructorReturn2.default)(this, (_getPrototypeOf2 = (0, _getPrototypeOf3.default)(Loading)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this.state = {
+        email: _this.props.navigation.getParam("email", null),
+        username: _this.props.navigation.getParam("username", null),
+        numMatches: 1
+      };
+      return _this;
     }
 
     (0, _createClass2.default)(Loading, [{
@@ -110555,33 +110585,45 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
     }, {
       key: "render",
       value: function render() {
-        var _this = this;
+        var _this2 = this;
 
+        var _this$state = this.state,
+            email = _this$state.email,
+            username = _this$state.username,
+            numMatches = _this$state.numMatches;
         return _react.default.createElement(_reactNative.View, {
           style: styles.container,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 17
+            lineNumber: 25
           }
         }, _react.default.createElement(_reactNative.Text, {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 18
+            lineNumber: 26
           }
-        }, "Looking for match"), _react.default.createElement(_reactNative.ActivityIndicator, {
+        }, "Looking for match..."), _react.default.createElement(_reactNative.Text, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 27
+          }
+        }, numMatches, "/4 players found"), _react.default.createElement(_reactNative.ActivityIndicator, {
           size: "large",
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 19
+            lineNumber: 28
           }
         }), _react.default.createElement(_reactNative.Button, {
           title: "Cancel",
           onPress: function onPress() {
-            return _this.props.navigation.navigate("Main");
+            return _this2.props.navigation.navigate("Main", {
+              username: username,
+              email: email
+            });
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 20
+            lineNumber: 29
           }
         }));
       }
@@ -110599,11 +110641,176 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
     }
   });
 },621,[1,19,20,27,30,33,46,2],"src\\pages\\lookingForMatch.js");
+__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = void 0;
+
+  var _classCallCheck2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "@babel/runtime/helpers/classCallCheck"));
+
+  var _createClass2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[2], "@babel/runtime/helpers/createClass"));
+
+  var _possibleConstructorReturn2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[3], "@babel/runtime/helpers/possibleConstructorReturn"));
+
+  var _getPrototypeOf3 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[4], "@babel/runtime/helpers/getPrototypeOf"));
+
+  var _inherits2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[5], "@babel/runtime/helpers/inherits"));
+
+  var _react = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[6], "react"));
+
+  var _reactNative = _$$_REQUIRE(_dependencyMap[7], "react-native");
+
+  var _reactNativeFirebase = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[8], "react-native-firebase"));
+
+  var _jsxFileName = "C:\\Users\\willi\\Desktop\\Projects\\GuessBot\\GuessBotApp\\src\\pages\\editprofile.js";
+
+  var EditProfile = function (_React$Component) {
+    (0, _inherits2.default)(EditProfile, _React$Component);
+
+    function EditProfile() {
+      var _getPrototypeOf2;
+
+      var _this;
+
+      (0, _classCallCheck2.default)(this, EditProfile);
+
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = (0, _possibleConstructorReturn2.default)(this, (_getPrototypeOf2 = (0, _getPrototypeOf3.default)(EditProfile)).call.apply(_getPrototypeOf2, [this].concat(args)));
+      _this.state = {
+        oldusername: _this.props.navigation.getParam("username", null),
+        username: _this.props.navigation.getParam("username", null),
+        email: _this.props.navigation.getParam("email", null),
+        errorMessage: null
+      };
+
+      _this.updateProfile = function () {
+        var _this$state = _this.state,
+            oldusername = _this$state.oldusername,
+            username = _this$state.username,
+            email = _this$state.email;
+
+        if (username.length < 4) {
+          _this.setState({
+            errorMessage: "Username must be at least 4 characters"
+          });
+        } else {
+          _reactNativeFirebase.default.firestore().collection("users").where("email", "==", email).get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+              _reactNativeFirebase.default.firestore().collection("users").doc(doc.id).update({
+                username: username
+              });
+            });
+
+            _this.setState({
+              oldusername: username
+            });
+          }).catch(function (error) {
+            console.log("Error" + error);
+            this.setState({
+              errorMessage: error.message
+            });
+          });
+        }
+      };
+
+      return _this;
+    }
+
+    (0, _createClass2.default)(EditProfile, [{
+      key: "render",
+      value: function render() {
+        var _this2 = this;
+
+        var _this$state2 = this.state,
+            email = _this$state2.email,
+            username = _this$state2.username,
+            oldusername = _this$state2.oldusername;
+        return _react.default.createElement(_reactNative.View, {
+          style: styles.container,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 48
+          }
+        }, _react.default.createElement(_reactNative.Text, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 49
+          }
+        }, "Edit Profile"), this.state.errorMessage && _react.default.createElement(_reactNative.Text, {
+          style: {
+            color: "red"
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 51
+          }
+        }, this.state.errorMessage), _react.default.createElement(_reactNative.TextInput, {
+          placeholder: "Username",
+          autoCapitalize: "none",
+          style: styles.textInput,
+          onChangeText: function onChangeText(username) {
+            return _this2.setState({
+              username: username
+            });
+          },
+          value: this.state.username,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 53
+          }
+        }), _react.default.createElement(_reactNative.Button, {
+          title: "Save",
+          onPress: this.updateProfile,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 60
+          }
+        }), _react.default.createElement(_reactNative.Button, {
+          title: "Back",
+          onPress: function onPress() {
+            return _this2.props.navigation.navigate("Main", {
+              username: oldusername,
+              email: email
+            });
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 61
+          }
+        }));
+      }
+    }]);
+    return EditProfile;
+  }(_react.default.Component);
+
+  exports.default = EditProfile;
+
+  var styles = _reactNative.StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center"
+    },
+    textInput: {
+      height: 40,
+      width: "90%",
+      borderColor: "gray",
+      borderWidth: 1,
+      marginTop: 8
+    }
+  });
+},622,[1,19,20,27,30,33,46,2,515],"src\\pages\\editprofile.js");
 __d(function(global, require, _aUnused, _bUnused, module, exports, _cUnused) {
   module.exports = {
   "name": "GuessBotApp",
   "displayName": "GuessBotApp"
 };
-},622,[],"app.json");
+},623,[],"app.json");
 __r(82);
 __r(0);

@@ -3,7 +3,11 @@ import { StyleSheet, Platform, Image, Text, View, Button } from "react-native";
 import firebase from "react-native-firebase";
 
 export default class Main extends React.Component {
-  state = { currentEmail: null, username: null };
+  state = {
+    email: this.props.navigation.getParam("email", null),
+    username: this.props.navigation.getParam("username", null)
+  };
+
   componentDidMount() {
     const email = firebase.auth().currentUser.email;
     firebase
@@ -19,12 +23,12 @@ export default class Main extends React.Component {
         });
 
         this.setState({
-          currentEmail: email,
+          email: email,
           username: matches[0]
         });
       })
       .catch(function(error) {
-        console.log("ERRRRROR:" + error);
+        console.log("Error:" + error);
       });
   }
 
@@ -37,17 +41,32 @@ export default class Main extends React.Component {
   };
 
   render() {
-    const { currentEmail, username } = this.state;
-    if (currentEmail === null) { //Don't render until everything is loaded
+    const { email, username } = this.state;
+    if (email === null) {
+      //Don't render until everything is loaded
       return null;
     } else {
       return (
         <View style={styles.container}>
-          <Text>Hi {currentEmail}!</Text>
+          <Text>Hi {email}!</Text>
           <Text>Your username is {username}</Text>
           <Button
             title="Find match"
-            onPress={() => this.props.navigation.navigate("LookingForMatch")}
+            onPress={() =>
+              this.props.navigation.navigate("LookingForMatch", {
+                username: username,
+                email: email
+              })
+            }
+          />
+          <Button
+            title="Edit Profile"
+            onPress={() =>
+              this.props.navigation.navigate("EditProfile", {
+                username: username,
+                email: email
+              })
+            }
           />
           <Button title="Logout" onPress={this.handleLogout} />
         </View>
@@ -61,12 +80,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
-  },
-  textInput: {
-    height: 40,
-    width: "90%",
-    borderColor: "gray",
-    borderWidth: 1,
-    marginTop: 8
   }
 });

@@ -9,7 +9,11 @@ export default class SignUp extends React.Component {
     const { email, password, username } = this.state;
     if (email == "" || password == "" || username == "") {
       this.setState({ errorMessage: "All fields must be entered" });
-    } else {
+    }
+    else if (username.length < 4){
+      this.setState({ errorMessage: "Username must be at least 4 characters" });
+    }
+    else {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)

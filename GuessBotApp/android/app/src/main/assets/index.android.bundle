@@ -110554,6 +110554,8 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
 
   var _reactNative = _$$_REQUIRE(_dependencyMap[7], "react-native");
 
+  var _reactNativeFirebase = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[8], "react-native-firebase"));
+
   var _jsxFileName = "C:\\Users\\willi\\Desktop\\Projects\\GuessBot\\GuessBotApp\\src\\pages\\lookingForMatch.js";
 
   var Loading = function (_React$Component) {
@@ -110574,56 +110576,111 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
       _this.state = {
         email: _this.props.navigation.getParam("email", null),
         username: _this.props.navigation.getParam("username", null),
-        numMatches: 1
+        numMatches: 1,
+        matchID: null
       };
+
+      _this.leaveMatch = function () {
+        var _this$state = _this.state,
+            email = _this$state.email,
+            username = _this$state.username,
+            matchID = _this$state.matchID;
+
+        _reactNativeFirebase.default.firestore().collection("matchmaking").doc(matchID).get().then(function (querySnapshot) {
+          var users = querySnapshot.data().users;
+          console.log("BEFORE: " + users);
+          users = users.filter(function (user) {
+            return user != email;
+          });
+          console.log("AFTER: " + users);
+        });
+      };
+
       return _this;
     }
 
     (0, _createClass2.default)(Loading, [{
       key: "componentDidMount",
-      value: function componentDidMount() {}
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        var _this$state2 = this.state,
+            email = _this$state2.email,
+            password = _this$state2.password;
+
+        _reactNativeFirebase.default.firestore().collection("matchmaking").limit(1).get().then(function (querySnapshot) {
+          var matchFound = false;
+          querySnapshot.forEach(function (doc) {
+            matchID = doc.id;
+            matchFound = true;
+            var users = doc.data().users;
+            var numMatches = users.push(email);
+
+            _reactNativeFirebase.default.firestore().collection("matchmaking").doc(doc.id).update({
+              users: users
+            }).then(function (match) {
+              return _this2.setState({
+                numMatches: numMatches,
+                matchID: doc.id
+              });
+            });
+          });
+
+          if (!matchFound) {
+            var users = [email];
+
+            _reactNativeFirebase.default.firestore().collection("matchmaking").add({
+              users: users
+            }).then(function (match) {
+              return _this2.setState({
+                numMatches: 1,
+                matchID: match.id
+              });
+            });
+          }
+        }).catch(function (error) {
+          console.log("Error:" + error);
+        });
+      }
     }, {
       key: "render",
       value: function render() {
-        var _this2 = this;
-
-        var _this$state = this.state,
-            email = _this$state.email,
-            username = _this$state.username,
-            numMatches = _this$state.numMatches;
+        var _this$state3 = this.state,
+            numMatches = _this$state3.numMatches,
+            matchID = _this$state3.matchID;
         return _react.default.createElement(_reactNative.View, {
           style: styles.container,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 25
+            lineNumber: 109
           }
         }, _react.default.createElement(_reactNative.Text, {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 26
+            lineNumber: 110
           }
         }, "Looking for match..."), _react.default.createElement(_reactNative.Text, {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 27
+            lineNumber: 111
           }
-        }, numMatches, "/4 players found"), _react.default.createElement(_reactNative.ActivityIndicator, {
+        }, numMatches, "/3 players found"), _react.default.createElement(_reactNative.Text, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 112
+          }
+        }, "Match ID: ", matchID), _react.default.createElement(_reactNative.ActivityIndicator, {
           size: "large",
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 28
+            lineNumber: 113
           }
         }), _react.default.createElement(_reactNative.Button, {
           title: "Cancel",
-          onPress: function onPress() {
-            return _this2.props.navigation.navigate("Main", {
-              username: username,
-              email: email
-            });
-          },
+          onPress: this.leaveMatch,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 29
+            lineNumber: 114
           }
         }));
       }
@@ -110640,7 +110697,7 @@ __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, e
       alignItems: "center"
     }
   });
-},621,[1,19,20,27,30,33,46,2],"src\\pages\\lookingForMatch.js");
+},621,[1,19,20,27,30,33,46,2,515],"src\\pages\\lookingForMatch.js");
 __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
 
